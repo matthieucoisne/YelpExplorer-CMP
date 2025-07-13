@@ -204,7 +204,6 @@ fun BusinessListItem(
                     .crossfade(true)
                     .build(),
                 error = painterResource(resource = Res.drawable.placeholder_business_list),
-//                placeholder = painterResource(resource = Res.drawable.placeholder_business_list), // TODO make a dark version?
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(120.dp),
@@ -265,7 +264,6 @@ fun BusinessListItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                // TODO use typography to avoid duplication
             }
         }
     }

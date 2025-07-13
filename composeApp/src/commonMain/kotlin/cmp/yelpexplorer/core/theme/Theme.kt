@@ -32,19 +32,9 @@ fun YelpExplorerTheme(
         darkTheme -> darkColorScheme
         else -> lightColorScheme
     }
-//    val view = LocalView.current
-//    if (!view.isInEditMode) {
-//        SideEffect {
-//            val window = (view.context as Activity).window
-//            window.statusBarColor = DarkRed.toArgb()
-//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
-//        }
-//    }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
-//        shapes = MaterialTheme.shapes, // TODO should we use shapes?
         content = content
     )
 }

@@ -10,9 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import cmp.yelpexplorer.core.navigation.Routes
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsScreen
 import cmp.yelpexplorer.features.business.presentation.businesslist.BusinessListScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Preview
 @Composable
 fun App(
     navController: NavHostController = rememberNavController()

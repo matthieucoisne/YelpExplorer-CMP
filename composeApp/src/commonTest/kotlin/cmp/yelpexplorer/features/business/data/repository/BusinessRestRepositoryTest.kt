@@ -83,6 +83,7 @@ class BusinessRestRepositoryTest : BusinessRepositoryTest() {
 
     @Test
     fun `get business details with reviews success`() = runTest {
+        // ARRANGE
         val httpClientEngine = MockEngine.Queue().apply {
             enqueue {
                 respond(

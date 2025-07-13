@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeHotReload)
 
     alias(libs.plugins.apollo)
     alias(libs.plugins.kotlinSerialization)
@@ -107,7 +108,7 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling) // TODO needed ?
+    debugImplementation(compose.uiTooling)
 }
 
 compose.desktop {

@@ -9,6 +9,7 @@ fun main() = application {
     initKoin()
     Window(
         onCloseRequest = ::exitApplication,
+        alwaysOnTop = true,
         title = "YelpExplorer-CMP",
     ) {
         YelpExplorerTheme(darkTheme = true) {

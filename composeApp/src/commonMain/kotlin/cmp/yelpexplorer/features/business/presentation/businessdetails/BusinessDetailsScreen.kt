@@ -188,7 +188,6 @@ fun BusinessPhoto(
             .data(businessDetailsUiModel.photoUrl)
             .crossfade(true)
             .build(),
-//        placeholder = painterResource(resource = Res.drawable.placeholder_business_list),, // TODO make a dark version?
         error = painterResource(resource = Res.drawable.placeholder_business_list),
         contentDescription = null,
         contentScale = ContentScale.Fit,
@@ -255,7 +254,6 @@ fun BusinessInfo(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth(),
         )
-        // TODO use TextStyle
     }
 }
 
@@ -336,7 +334,6 @@ fun BusinessReview(
                         .data(reviewUiModel.userImageUrl)
                         .crossfade(true)
                         .build(),
-//                    placeholder = painterResource(resource = Res.drawable.placeholder_user), // TODO make a dark version?
                     error = painterResource(resource = Res.drawable.placeholder_user),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
