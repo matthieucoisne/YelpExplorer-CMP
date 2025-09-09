@@ -6,7 +6,6 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -21,13 +20,12 @@ actual fun provideHttpClient(serverUrl: String): HttpClient = HttpClient(CIO) {
     }
 
     install(Logging) {
-        logger = Logger.DEFAULT
-        level = LogLevel.ALL
         logger = object : Logger {
             override fun log(message: String) {
-                println("iOS HttpClient: $message")
+                println("Desktop HttpClient: $message")
             }
         }
+        level = LogLevel.ALL
     }
 
     install(ContentNegotiation) {

@@ -4,7 +4,6 @@
     <string name="loading">Loading…</string>
 
     <string name="business_name">%1$d. %2$s</string>
-    <string name="business_price">%1$s\u0020\u0020\u2022\u0020\u0020</string>
 
     <string name="opening_hours">Opening Hours</string>
     <string name="closed">Closed</string>

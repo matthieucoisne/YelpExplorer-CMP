@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -24,8 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,15 +37,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cmp.yelpexplorer.core.theme.YelpExplorerTheme
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import cmp.yelpexplorer.core.utils.StarsProvider
-import cmp.yelpexplorer.core.theme.YelpExplorerTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -51,41 +54,36 @@ import org.koin.compose.viewmodel.koinViewModel
 import yelpexplorer_cmp.composeapp.generated.resources.Res
 import yelpexplorer_cmp.composeapp.generated.resources.app_name
 import yelpexplorer_cmp.composeapp.generated.resources.business_name
-import yelpexplorer_cmp.composeapp.generated.resources.business_price
 import yelpexplorer_cmp.composeapp.generated.resources.business_reviews_count
-import yelpexplorer_cmp.composeapp.generated.resources.error_something_went_wrong
 import yelpexplorer_cmp.composeapp.generated.resources.loading
 import yelpexplorer_cmp.composeapp.generated.resources.placeholder_business_list
+import yelpexplorer_cmp.composeapp.generated.resources.stars_small_4_half
 
 @Composable
 fun BusinessListScreen(
-    modifier: Modifier = Modifier,
     viewModel: BusinessListViewModel = koinViewModel(),
     onBusinessClicked: (String) -> Unit
 ) {
-    val viewState by viewModel.uiState.collectAsStateWithLifecycle()
+    val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     BusinessListContent(
-        modifier = modifier,
         viewState = viewState,
-        onRefresh = {
-            viewModel.getBusinessList()
+        onEvent = {
+            if (it is BusinessListScreenEvent.OnBusinessClicked) {
+                onBusinessClicked(it.business.id)
+            } // else viewModel.onEvent(it)
         },
-        onBusinessClicked = onBusinessClicked
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusinessListContent(
-    modifier: Modifier = Modifier,
-    viewState: BusinessListViewModel.ViewState,
-    onRefresh: () -> Unit,
-    onBusinessClicked: (String) -> Unit
+    viewState: BusinessListViewState,
+    onEvent: (BusinessListScreenEvent) -> Unit,
 ) {
-    val pullToRefreshState = rememberPullToRefreshState()
-
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(resource = Res.string.app_name)) },
@@ -94,40 +92,33 @@ fun BusinessListContent(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
-        }
+        },
     ) { innerPadding ->
-        PullToRefreshBox(
-            state = pullToRefreshState,
-            onRefresh = onRefresh,
-            isRefreshing = viewState is BusinessListViewModel.ViewState.ShowLoading,
-            modifier = modifier.padding(innerPadding)
-        ) {
-            when (viewState) {
-                is BusinessListViewModel.ViewState.ShowBusinessList -> {
-                    BusinessList(
-                        data = viewState.businessList.businessList,
-                        onBusinessClicked = onBusinessClicked
-                    )
-                }
+        when (viewState) {
+            is BusinessListViewState.ShowBusinessList -> {
+                BusinessList(
+                    modifier = Modifier.padding(
+                        top = innerPadding.calculateTopPadding(),
+                        start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
+                    ),
+                    data = viewState.businessList.businessList,
+                    onEvent = onEvent
+                )
+            }
 
-                is BusinessListViewModel.ViewState.ShowError -> {
-                    CenteredText(
-                        text = stringResource(resource = Res.string.error_something_went_wrong)
-                    )
-                }
+            is BusinessListViewState.ShowError -> {
+                CenteredText(
+                    modifier = Modifier.padding(innerPadding),
+                    text = viewState.error
+                )
+            }
 
-                is BusinessListViewModel.ViewState.ShowLoading -> {
-                    if (viewState.businessList != null) {
-                        BusinessList(
-                            data = viewState.businessList.businessList,
-                            onBusinessClicked = {} // dont allow clicking while loading
-                        )
-                    } else {
-                        CenteredText(
-                            text = stringResource(resource = Res.string.loading)
-                        )
-                    }
-                }
+            is BusinessListViewState.ShowLoading -> {
+                CenteredText(
+                    modifier = Modifier.padding(innerPadding),
+                    text = stringResource(resource = Res.string.loading)
+                )
             }
         }
     }
@@ -135,8 +126,8 @@ fun BusinessListContent(
 
 @Composable
 fun CenteredText(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -151,20 +142,23 @@ fun CenteredText(
 
 @Composable
 fun BusinessList(
-    modifier: Modifier = Modifier,
     data: List<BusinessUiModel>,
-    onBusinessClicked: (String) -> Unit,
+    onEvent: (BusinessListScreenEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.padding(horizontal = 8.dp),
+        contentPadding = PaddingValues(
+            top = 8.dp,
+            bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding(),
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         itemsIndexed(items = data) { index, businessUiModel ->
             BusinessListItem(
                 businessUiModel = businessUiModel,
                 position = index + 1,
-                onBusinessClicked = onBusinessClicked
+                onEvent = onEvent
             )
         }
     }
@@ -172,18 +166,15 @@ fun BusinessList(
 
 @Composable
 fun BusinessListItem(
-    modifier: Modifier = Modifier,
     businessUiModel: BusinessUiModel,
     position: Int,
-    onBusinessClicked: (String) -> Unit,
+    onEvent: (BusinessListScreenEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val price = if (businessUiModel.price.isNotEmpty()) {
-        stringResource(resource = Res.string.business_price, businessUiModel.price)
-    } else ""
-
     Card(
+        modifier = modifier,
         onClick = {
-            onBusinessClicked(businessUiModel.id)
+            onEvent(BusinessListScreenEvent.OnBusinessClicked(businessUiModel))
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -192,11 +183,10 @@ fun BusinessListItem(
             defaultElevation = 2.dp
         ),
         shape = RoundedCornerShape(4.dp),
-        modifier = modifier,
     ){
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
@@ -216,7 +206,7 @@ fun BusinessListItem(
                     text = stringResource(
                         resource = Res.string.business_name,
                         position,
-                        businessUiModel.name.uppercase()
+                        businessUiModel.name
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = 15.sp,
@@ -228,10 +218,10 @@ fun BusinessListItem(
                 Spacer(modifier = Modifier.size(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
+                    modifier = Modifier,
                 ) {
                     Image(
-                        painter = painterResource(resource = StarsProvider.getDrawableResource(businessUiModel.rating)),
+                        painter = painterResource(resource = businessUiModel.rating),
                         contentDescription = null,
                         modifier = Modifier
                             .width(82.dp)
@@ -250,7 +240,7 @@ fun BusinessListItem(
                 }
                 Spacer(modifier = Modifier.size(2.dp))
                 Text(
-                    text = "$price${businessUiModel.categories}",
+                    text = businessUiModel.priceAndCategories,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -271,38 +261,47 @@ fun BusinessListItem(
 
 @Preview
 @Composable
-fun PreviewLoading() {
+fun PreviewBusinessList() {
     YelpExplorerTheme(darkTheme = true) {
-        Scaffold {
-            CenteredText(
-                text = stringResource(Res.string.loading),
-                modifier = Modifier.padding(it)
-            )
-        }
+        BusinessListContent(
+            viewState = BusinessListViewState.ShowBusinessList(
+                BusinessListUiModel(
+                    businessList = List(10) {
+                        BusinessUiModel(
+                            id = "id",
+                            name = "Jun i",
+                            photoUrl = "fake.url/business1.png",
+                            rating = Res.drawable.stars_small_4_half,
+                            reviewCount = 2,
+                            address = "4567 Rue St-Denis, Montreal",
+                            priceAndCategories = "$$ - Sushi Bars, Japanese",
+                        )
+                    }
+                )
+            ),
+            onEvent = {}
+        )
     }
 }
 
 @Preview
 @Composable
-fun PreviewBusinessList() {
+fun PreviewLoading() {
     YelpExplorerTheme(darkTheme = true) {
-        Scaffold {
-            BusinessList(
-                modifier = Modifier.padding(it),
-                data = MutableList(10) {
-                    BusinessUiModel(
-                        id = "id",
-                        name = "Jun i",
-                        photoUrl = "",
-                        rating = 4.5,
-                        reviewCount = 2,
-                        address = "4567 Rue St-Denis, Montreal",
-                        price = "$$",
-                        categories = "Sushi Bars, Japanese"
-                    )
-                },
-                onBusinessClicked = {}
-            )
-        }
+        BusinessListContent(
+            viewState = BusinessListViewState.ShowLoading,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewError() {
+    YelpExplorerTheme(darkTheme = true) {
+        BusinessListContent(
+            viewState = BusinessListViewState.ShowError("Oops! Something went wrong"),
+            onEvent = {}
+        )
     }
 }

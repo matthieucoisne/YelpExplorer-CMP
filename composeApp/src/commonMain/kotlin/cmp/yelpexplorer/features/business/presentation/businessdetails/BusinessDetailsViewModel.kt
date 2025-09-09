@@ -4,44 +4,39 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import org.jetbrains.compose.resources.getString
 import yelpexplorer_cmp.composeapp.generated.resources.Res
 import yelpexplorer_cmp.composeapp.generated.resources.error_something_went_wrong
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BusinessDetailsViewModel(
-    getBusinessDetailsUseCase: BusinessDetailsUseCase,
     savedStateHandle: SavedStateHandle,
+    private val businessDetailsUseCase: BusinessDetailsUseCase,
+    private val businessDetailsMapper: BusinessDetailsMapper,
 ) : ViewModel() {
 
-    sealed class ViewState {
-        data object ShowLoading : ViewState()
-        data class ShowBusinessDetails(val businessDetails: BusinessDetailsUiModel) : ViewState()
-        data class ShowError(val error: StringResource) : ViewState()
-    }
+    private val businessId = savedStateHandle.getStateFlow<String?>("businessId", null)
 
-    private val _uiState = MutableStateFlow<ViewState>(ViewState.ShowLoading)
-    val uiState = _uiState.asStateFlow()
-
-    init {
-        // https://developer.android.com/jetpack/compose/navigation#retrieving-complex-data
-        val businessId: String = checkNotNull(savedStateHandle["businessId"])
-
-        _uiState.value = ViewState.ShowLoading
-        viewModelScope.launch {
-            val result = getBusinessDetailsUseCase.execute(
-                businessId = businessId
-            )
-            _uiState.value = result.fold(
-                onSuccess = {
-                    ViewState.ShowBusinessDetails(it.toBusinessDetailsUiModel())
-                },
-                onFailure = {
-                    ViewState.ShowError(Res.string.error_something_went_wrong)
-                },
-            )
-        }
-    }
+    val viewState = businessId.filterNotNull().flatMapLatest {
+        businessDetailsUseCase.execute(businessId = it)
+    }.map {
+        BusinessDetailsViewState.ShowBusinessDetails(
+            businessDetails = businessDetailsMapper.map(it),
+        )
+    }.catch {
+        BusinessDetailsViewState.ShowError(
+            error = it.message ?: getString(Res.string.error_something_went_wrong),
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = BusinessDetailsViewState.ShowLoading
+    )
 }

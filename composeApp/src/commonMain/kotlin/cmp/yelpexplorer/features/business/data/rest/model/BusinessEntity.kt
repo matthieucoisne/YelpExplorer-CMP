@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BusinessListResponse(
-    val businesses: List<BusinessEntity>
+    val businesses: List<BusinessEntity>,
 )
 
 @Serializable
@@ -21,28 +21,28 @@ data class BusinessEntity(
     val price: String?,
     val location: LocationEntity,
     val hours: List<HoursEntity>?,
-    val reviews: List<ReviewEntity>?
+    val reviews: List<ReviewEntity>?,
 ) {
     @Serializable
     data class CategoryEntity(
-        val title: String
+        val title: String,
     )
 
     @Serializable
     data class LocationEntity(
         val address1: String,
-        val city: String
+        val city: String,
     )
 
     @Serializable
     data class HoursEntity(
-        val open: List<OpenEntity>
+        val open: List<OpenEntity>,
     )
 
     @Serializable
     data class OpenEntity(
         val start: String,
         val end: String,
-        val day: Int
+        val day: Int,
     )
 }

@@ -1,9 +1,11 @@
-package cmp.yelpexplorer.features.business.data.repository
+package cmp.yelpexplorer.features.business.data.graphql.repository
 
+import cmp.yelpexplorer.core.utils.DateTimeFormater
+import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSourceImpl
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessGraphQLMapper
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.mockserver.MockServer
 import com.apollographql.mockserver.MockResponse
-import cmp.yelpexplorer.features.business.data.graphql.repository.BusinessGraphQLRepository
 import cmp.yelpexplorer.utils.FileUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -25,7 +27,8 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
     fun before() {
         mockServer = MockServer()
         repository = BusinessGraphQLRepository(
-            apolloClient = getApolloClient(mockServer),
+            businessGraphQLDataSource = BusinessGraphQLDataSourceImpl(getApolloClient(mockServer)),
+            businessGraphQLMapper = BusinessGraphQLMapper(DateTimeFormater()),
             dispatcher = UnconfinedTestDispatcher(),
         )
     }

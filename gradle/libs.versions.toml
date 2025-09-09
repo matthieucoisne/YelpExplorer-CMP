@@ -1,24 +1,25 @@
 [versions]
-agp = "8.11.1"
+agp = "8.13.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
-androidx-activityCompose = "1.10.1"
-androidx-lifecycle = "2.9.1"
-apollo = "4.3.1"
+androidx-activityCompose = "1.11.0"
+androidx-lifecycle = "2.9.6"
+apollo = "4.3.3"
 apollo-engineKtor = "0.1.1"
-apollo-mockserver = "0.1.1"
-coilCompose = "3.2.0"
-compose-hotreload = "1.0.0-beta03"
-compose-multiplatform = "1.8.2"
-koin = "4.1.0"
-kotlin = "2.2.0"
+apollo-mockserver = "0.3.0"
+coilCompose = "3.3.0"
+compose-hotreload = "1.0.0-rc03"
+compose-multiplatform = "1.9.3"
+koin = "4.1.1"
+kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serializationJson = "1.9.0"
-ktor = "3.2.1"
-mockitoKotlin = "5.4.0"
-okio = "3.15.0"
+ktor = "3.3.2"
+mockitoKotlin = "6.1.0"
+mockk = "1.14.6"
+okio = "3.16.2"
 turbine = "1.2.1"
 
 [libraries]
@@ -55,6 +56,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serializationJson" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }

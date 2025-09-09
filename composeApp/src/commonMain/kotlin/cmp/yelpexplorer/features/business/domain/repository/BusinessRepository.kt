@@ -1,9 +1,14 @@
 package cmp.yelpexplorer.features.business.domain.repository
 
 import cmp.yelpexplorer.features.business.domain.model.Business
+import kotlinx.coroutines.flow.Flow
 
-// https://developer.android.com/kotlin/coroutines/coroutines-best-practices#coroutines-data-layer
 interface BusinessRepository {
-    suspend fun getBusinessList(term: String, location: String, sortBy: String, limit: Int): Result<List<Business>>
-    suspend fun getBusinessDetailsWithReviews(businessId: String): Result<Business>
+    fun getBusinessList(
+        term: String,
+        location: String,
+        sortBy: String,
+        limit: Int,
+    ): Flow<List<Business>>
+    fun getBusinessDetailsWithReviews(businessId: String): Flow<Business>
 }

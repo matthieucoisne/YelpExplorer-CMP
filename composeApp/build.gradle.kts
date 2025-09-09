@@ -73,7 +73,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
-            implementation(libs.mockito.kotlin)
+//            implementation(libs.mockk)
             implementation(libs.okio)
             implementation(libs.turbine)
         }

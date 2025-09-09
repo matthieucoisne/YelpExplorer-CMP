@@ -1,35 +1,17 @@
 package cmp.yelpexplorer.features.business.presentation.businesslist
 
-import cmp.yelpexplorer.features.business.domain.model.Business
+import org.jetbrains.compose.resources.DrawableResource
 
 data class BusinessListUiModel(
-    val businessList: List<BusinessUiModel>
+    val businessList: List<BusinessUiModel>,
 )
 
 data class BusinessUiModel(
     val id: String,
     val name: String,
     val photoUrl: String,
-    val rating: Double,
+    val rating: DrawableResource,
     val reviewCount: Int,
     val address: String,
-    val price: String,
-    val categories: String,
+    val priceAndCategories: String,
 )
-
-fun List<Business>.toBusinessListUiModel(): BusinessListUiModel {
-    return BusinessListUiModel(
-        businessList = map {
-            BusinessUiModel(
-                id = it.id,
-                name = it.name,
-                photoUrl = it.photoUrl,
-                rating = it.rating,
-                reviewCount = it.reviewCount,
-                address = it.address,
-                price = it.price,
-                categories = it.categories.joinToString(separator = ", ")
-            )
-        }
-    )
-}

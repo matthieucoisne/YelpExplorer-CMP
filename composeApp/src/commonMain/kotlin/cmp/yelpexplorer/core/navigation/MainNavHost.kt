@@ -1,17 +1,16 @@
-package cmp.yelpexplorer
+package cmp.yelpexplorer.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cmp.yelpexplorer.core.navigation.Routes
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsScreen
 import cmp.yelpexplorer.features.business.presentation.businesslist.BusinessListScreen
 
 @Composable
-fun App(
-    navController: NavHostController = rememberNavController()
+fun MainNavHost(
+    navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
         navController = navController,

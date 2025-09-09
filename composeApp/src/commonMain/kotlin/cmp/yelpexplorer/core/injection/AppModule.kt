@@ -8,24 +8,21 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dispatcherModule = module {
-    single<CoroutineDispatcher>(named(Const.DISPATCHER_DEFAULT)) { Dispatchers.Default }
     single<CoroutineDispatcher>(named(Const.DISPATCHER_IO)) { Dispatchers.IO }
-    single<CoroutineDispatcher>(named(Const.DISPATCHER_MAIN)) { Dispatchers.Main }
 }
 
 val dataSourceModule = module {
     when (Const.DATASOURCE) {
         DataSource.REST -> {
-            single { provideHttpClient(Const.URL_REST) }
+            single { provideHttpClient(serverUrl = Const.URL_REST) }
         }
         DataSource.GRAPHQL -> {
-            single { provideHttpClient(Const.URL_GRAPHQL) }
-            singleOf(::provideApolloClient)
+            single { provideHttpClient(serverUrl = Const.URL_GRAPHQL) }
+            single { provideApolloClient(httpClient = get()) }
         }
     }
 }
