@@ -1,5 +1,6 @@
 package cmp.yelpexplorer.features.business.data.graphql.repository
 
+import app.cash.turbine.test
 import cmp.yelpexplorer.core.utils.DateTimeFormater
 import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSourceImpl
 import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessGraphQLMapper
@@ -7,14 +8,18 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.mockserver.MockServer
 import com.apollographql.mockserver.MockResponse
 import cmp.yelpexplorer.utils.FileUtils
+import com.apollographql.apollo.exception.NoDataException
+import com.apollographql.mockserver.enqueueError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlin.reflect.typeOf
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -23,13 +28,21 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
     private lateinit var mockServer: MockServer
     private lateinit var repository: BusinessGraphQLRepository
 
+    private fun getApolloClient(mockServer: MockServer): ApolloClient {
+        return runBlocking {
+            ApolloClient.Builder()
+                .serverUrl(serverUrl = mockServer.url())
+                .build()
+        }
+    }
+
     @BeforeTest
     fun before() {
         mockServer = MockServer()
         repository = BusinessGraphQLRepository(
             businessGraphQLDataSource = BusinessGraphQLDataSourceImpl(getApolloClient(mockServer)),
             businessGraphQLMapper = BusinessGraphQLMapper(DateTimeFormater()),
-            dispatcher = UnconfinedTestDispatcher(),
+            ioDispatcher = UnconfinedTestDispatcher(),
         )
     }
 
@@ -57,18 +70,19 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
         )
 
         // ASSERT
-        assertEquals(actual = result, expected = Result.success(value = listOf(expectedBusiness)))
+        result.test {
+            assertEquals(
+                expected = listOf(expectedBusiness),
+                actual = awaitItem(),
+            )
+            awaitComplete()
+        }
     }
 
     @Test
     fun `get business list error`() = runTest {
         // ARRANGE
-        mockServer.enqueue(
-            MockResponse.Builder()
-                .statusCode(statusCode = 500)
-                .body(body = "Internal server error")
-                .build()
-        )
+        mockServer.enqueueError(500)
 
         // ACT
         val result = repository.getBusinessList(
@@ -79,8 +93,9 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
         )
 
         // ASSERT
-        assertTrue(actual = result.isFailure)
-        assertTrue(actual = result.exceptionOrNull() is Exception)
+        result.test {
+            assertTrue { awaitError() is NoDataException }
+        }
     }
 
     @Test
@@ -97,32 +112,26 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
         val result = repository.getBusinessDetailsWithReviews(businessId = "businessId")
 
         // ASSERT
-        assertEquals(actual = result, expected = Result.success(value = expectedBusinessDetailsWithReviews))
+        result.test {
+            assertEquals(
+                expected = expectedBusinessDetailsWithReviews,
+                actual = awaitItem(),
+            )
+            awaitComplete()
+        }
     }
 
     @Test
-    fun `get business details error`() = runTest {
+    fun `get business details with reviews error`() = runTest {
         // ARRANGE
-        mockServer.enqueue(
-            MockResponse.Builder()
-                .statusCode(statusCode = 500)
-                .body(body = "Internal server error")
-                .build()
-        )
+        mockServer.enqueueError(500)
 
         // ACT
         val result = repository.getBusinessDetailsWithReviews(businessId = "businessId")
 
         // ASSERT
-        assertTrue(actual = result.isFailure)
-        assertTrue(actual = result.exceptionOrNull() is Exception)
-    }
-
-    private fun getApolloClient(mockServer: MockServer): ApolloClient {
-        return runBlocking {
-            ApolloClient.Builder()
-                .serverUrl(serverUrl = mockServer.url())
-                .build()
+        result.test {
+            assertTrue { awaitError() is NoDataException }
         }
     }
 }

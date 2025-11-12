@@ -1,14 +1,12 @@
 package cmp.yelpexplorer.features.business.presentation.businesslist
 
 import app.cash.turbine.test
-import cmp.yelpexplorer.AppStateManager
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import org.jetbrains.compose.resources.getString
 import yelpexplorer_cmp.composeapp.generated.resources.Res
-import yelpexplorer_cmp.composeapp.generated.resources.error_something_went_wrong
 import yelpexplorer_cmp.composeapp.generated.resources.stars_small_4_half
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,28 +14,36 @@ import kotlin.test.assertEquals
 class BusinessListViewModelTest {
 
     // https://developer.android.com/kotlin/flow/test#continuous-collection
-    private class FakeBusinessListUseCase(private val result: Result<List<Business>>) : BusinessListUseCase {
-        override suspend fun execute(
+    private class FakeBusinessListUseCase(
+        private val result: List<Business> = emptyList(),
+        private val error: Exception? = null,
+    ) : BusinessListUseCase {
+        override fun execute(
             term: String,
             location: String,
             sortBy: String,
             limit: Int,
-        ): Result<List<Business>> {
-            delay(1) // Delay to ensure the initial state is captured by the test collector.
-            return result
+        ): Flow<List<Business>> = flow {
+            if (error != null) {
+                throw error
+            } else {
+                emit(result)
+            }
         }
     }
 
-    private class FakeBusinessListMapper : BusinessListMapper {
+    private class FakeBusinessListMapper(
+        private val result: List<BusinessUiModel> = emptyList(),
+    ) : BusinessListMapper {
         override suspend fun map(input: List<Business>): BusinessListUiModel {
             return BusinessListUiModel(
-                businessList = emptyList(),
+                businessList = result,
             )
         }
     }
 
     @Test
-    fun `init success`() = runTest {
+    fun `viewState is ShowLoading then ShowBusinessList`() = runTest {
         // ARRANGE
         val fakeBusiness = Business(
             id = "id",
@@ -62,16 +68,17 @@ class BusinessListViewModelTest {
         )
         val viewModel = BusinessListViewModel(
             businessListUseCase = FakeBusinessListUseCase(
-                result = Result.success(value = listOf(fakeBusiness))
+                result = listOf(fakeBusiness)
             ),
-            businessListMapper = FakeBusinessListMapper(),
-            appStateManager = AppStateManager(),
+            businessListMapper = FakeBusinessListMapper(
+                result = listOf(expectedBusinessUiModel)
+            ),
         )
 
         // ACT & ASSERT
         viewModel.viewState.test {
             assertEquals(
-                expected = BusinessListViewState.ShowLoading(),
+                expected = BusinessListViewState.ShowLoading,
                 actual = awaitItem()
             )
             assertEquals(
@@ -84,26 +91,23 @@ class BusinessListViewModelTest {
     }
 
     @Test
-    fun `init error`() = runTest {
+    fun `viewState is ShowLoading then ShowError`() = runTest {
         // ARRANGE
         val viewModel = BusinessListViewModel(
             businessListUseCase = FakeBusinessListUseCase(
-                result = Result.failure(Exception())
+                error = Exception("error"),
             ),
             businessListMapper = FakeBusinessListMapper(),
-            appStateManager = AppStateManager(),
         )
 
         // ACT & ASSERT
         viewModel.viewState.test {
             assertEquals(
-                expected = BusinessListViewState.ShowLoading(),
+                expected = BusinessListViewState.ShowLoading,
                 actual = awaitItem()
             )
             assertEquals(
-                expected = BusinessListViewState.ShowError(
-                    error = getString(Res.string.error_something_went_wrong)
-                ),
+                expected = BusinessListViewState.ShowError("error"),
                 actual = awaitItem()
             )
         }

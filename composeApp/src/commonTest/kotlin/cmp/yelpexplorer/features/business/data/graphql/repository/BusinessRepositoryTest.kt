@@ -20,12 +20,12 @@ abstract class BusinessRepositoryTest {
 
     protected val expectedBusinessDetailsWithReviews = expectedBusiness.copy(
         hours = mapOf(
-            0 to listOf("06:00 PM - 10:00 PM"),
-            1 to listOf("11:30 AM - 02:00 PM", "06:00 PM - 10:00 PM"),
-            2 to listOf("11:30 AM - 02:00 PM", "06:00 PM - 10:00 PM"),
-            3 to listOf("11:30 AM - 02:00 PM", "06:00 PM - 10:00 PM"),
-            4 to listOf("11:30 AM - 02:00 PM", "06:00 PM - 11:00 PM"),
-            5 to listOf("06:00 PM - 11:00 PM"),
+            0 to listOf("6:00 PM - 10:00 PM"),
+            1 to listOf("11:30 AM - 2:00 PM", "6:00 PM - 10:00 PM"),
+            2 to listOf("11:30 AM - 2:00 PM", "6:00 PM - 10:00 PM"),
+            3 to listOf("11:30 AM - 2:00 PM", "6:00 PM - 10:00 PM"),
+            4 to listOf("11:30 AM - 2:00 PM", "6:00 PM - 11:00 PM"),
+            5 to listOf("6:00 PM - 11:00 PM"),
         ),
         reviews = listOf(
             Review(

@@ -12,7 +12,5 @@ class YelpExplorer : Application() {
         initKoin {
             androidContext(this@YelpExplorer)
         }
-
-//        Timber.plant(DebugTree())
     }
 }

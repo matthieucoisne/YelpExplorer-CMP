@@ -2,10 +2,12 @@ package cmp.yelpexplorer.features.business.presentation.businesslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -26,7 +28,7 @@ class BusinessListViewModel(
     private val sortBy = MutableStateFlow("rating")
     private val limit = MutableStateFlow(20)
 
-    val viewState = combine(
+    val viewState: StateFlow<BusinessListViewState> = combine(
         term,
         location,
         sortBy,
@@ -40,13 +42,15 @@ class BusinessListViewModel(
         )
     }.flatMapLatest {
         it
-    }.map {
+    }.map<List<Business>, BusinessListViewState> {
         BusinessListViewState.ShowBusinessList(
             businessList = businessListMapper.map(it)
         )
     }.catch {
-        BusinessListViewState.ShowError(
-            error = it.message ?: getString(Res.string.error_something_went_wrong)
+        emit(
+            BusinessListViewState.ShowError(
+                error = it.message ?: getString(Res.string.error_something_went_wrong)
+            )
         )
     }.stateIn(
         scope = viewModelScope,
