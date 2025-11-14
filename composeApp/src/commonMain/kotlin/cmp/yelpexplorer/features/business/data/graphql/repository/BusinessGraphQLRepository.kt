@@ -1,7 +1,8 @@
 package cmp.yelpexplorer.features.business.data.graphql.repository
 
 import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSource
-import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessDetailsGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessListGraphQLMapper
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.repository.BusinessRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.flowOn
 
 class BusinessGraphQLRepository(
     private val businessGraphQLDataSource: BusinessGraphQLDataSource,
-    private val businessGraphQLMapper: BusinessGraphQLMapper,
+    private val businessListGraphQLMapper: BusinessListGraphQLMapper,
+    private val businessDetailsGraphQLMapper: BusinessDetailsGraphQLMapper,
     private val ioDispatcher: CoroutineDispatcher,
 ) : BusinessRepository {
     override fun getBusinessList(
@@ -26,13 +28,13 @@ class BusinessGraphQLRepository(
             sortBy,
             limit
         )
-        emit(businessGraphQLMapper.map(businessListResponse))
+        emit(businessListGraphQLMapper.map(businessListResponse))
     }.flowOn(ioDispatcher)
 
     override fun getBusinessDetailsWithReviews(
-        businessId: String
+        businessId: String,
     ): Flow<Business> = flow {
         val businessDetailsResponse = businessGraphQLDataSource.getBusinessDetails(businessId)
-        emit(businessGraphQLMapper.map(businessDetailsResponse))
+        emit(businessDetailsGraphQLMapper.map(businessDetailsResponse))
     }.flowOn(ioDispatcher)
 }

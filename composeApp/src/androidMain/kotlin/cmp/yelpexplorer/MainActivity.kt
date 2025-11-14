@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import cmp.yelpexplorer.core.theme.YelpExplorerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,9 +17,7 @@ class MainActivity : ComponentActivity() {
             ),
         )
         setContent {
-            YelpExplorerTheme(darkTheme = true) {
-                App()
-            }
+            App()
         }
     }
 }

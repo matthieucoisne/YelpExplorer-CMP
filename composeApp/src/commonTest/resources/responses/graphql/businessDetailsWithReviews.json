@@ -35,60 +35,6 @@
                             "day": 0,
                             "start": "1800",
                             "end": "2200"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 1,
-                            "start": "1130",
-                            "end": "1400"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 1,
-                            "start": "1800",
-                            "end": "2200"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 2,
-                            "start": "1130",
-                            "end": "1400"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 2,
-                            "start": "1800",
-                            "end": "2200"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 3,
-                            "start": "1130",
-                            "end": "1400"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 3,
-                            "start": "1800",
-                            "end": "2200"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 4,
-                            "start": "1130",
-                            "end": "1400"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 4,
-                            "start": "1800",
-                            "end": "2300"
-                        },
-                        {
-                            "__typename": "OpenHours",
-                            "day": 5,
-                            "start": "1800",
-                            "end": "2300"
                         }
                     ]
                 }
@@ -99,36 +45,12 @@
                     "id": "J5G0p50XbdHy3do9GNq-wA",
                     "user": {
                         "__typename": "User",
-                        "name": "Katerina B.",
-                        "image_url": "https://s3-media2.fl.yelpcdn.com/photo/JMoM8Ea5FkmtvrxZIOz8ZA/o.jpg"
+                        "name": "John Smith",
+                        "image_url": "http://example.com/user1.jpg"
                     },
-                    "text": "Amazing sushi and lovely atmosphere.  This resto is perfect for any special occasion  or that romantic date. The fish is fresh and hits all the right spots....",
+                    "text": "Great place!\n\nHighly recommended.",
                     "rating": 5,
-                    "time_created": "2023-08-02 16:08:47"
-                },
-                {
-                    "__typename": "Review",
-                    "id": "_0EuZvapzl_O52t7k6jteA",
-                    "user": {
-                        "__typename": "User",
-                        "name": "Wenn S.",
-                        "image_url": "https://s3-media1.fl.yelpcdn.com/photo/vIkg4OoELiWQlmBqz3WFfA/o.jpg"
-                    },
-                    "text": "Fantastic modern  sushi spot in Montreal in a restaurant with French decor . Sushi chefs are Japanese and every piece is expertly sliced. We loved our food...",
-                    "rating": 4,
-                    "time_created": "2023-07-29 06:07:15"
-                },
-                {
-                    "__typename": "Review",
-                    "id": "HT24zf_x84AsQk_QAtVx8w",
-                    "user": {
-                        "__typename": "User",
-                        "name": "Will S.",
-                        "image_url": "https://s3-media3.fl.yelpcdn.com/photo/1YsS_WGK7nI7u9jQk4RyRw/o.jpg"
-                    },
-                    "text": "Atypical of any omakase I've had and wowz was it very good. First off the omakase was made from mostly local québécois products;  plates were  beyond...",
-                    "rating": 5,
-                    "time_created": "2022-07-03 15:42:27"
+                    "time_created": "2023-10-27 10:00:00"
                 }
             ]
         }

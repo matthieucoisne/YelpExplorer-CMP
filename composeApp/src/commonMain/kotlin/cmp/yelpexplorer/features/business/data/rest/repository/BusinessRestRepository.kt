@@ -1,7 +1,8 @@
 package cmp.yelpexplorer.features.business.data.rest.repository
 
 import cmp.yelpexplorer.features.business.data.rest.datasource.remote.BusinessRestDataSource
-import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessDetailsRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessListRestMapper
 import cmp.yelpexplorer.features.business.data.rest.mapper.ReviewRestMapper
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.repository.BusinessRepository
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 
 class BusinessRestRepository(
     private val businessRestDataSource: BusinessRestDataSource,
-    private val businessRestMapper: BusinessRestMapper,
+    private val businessListRestMapper: BusinessListRestMapper,
+    private val businessDetailsRestMapper: BusinessDetailsRestMapper,
     private val reviewRestMapper: ReviewRestMapper,
     private val ioDispatcher: CoroutineDispatcher,
 ) : BusinessRepository {
@@ -31,7 +33,7 @@ class BusinessRestRepository(
             sortBy,
             limit,
         )
-        emit(businessRestMapper.map(businessListResponse.businesses))
+        emit(businessListRestMapper.map(businessListResponse.businesses))
     }.flowOn(ioDispatcher)
 
     override fun getBusinessDetailsWithReviews(
@@ -43,7 +45,7 @@ class BusinessRestRepository(
             val businessDetailsResponse = deferredBusinessDetails.await()
             val businessReviewsResponse = deferredBusinessReviews.await()
 
-            val businessDetails = businessRestMapper.map(businessDetailsResponse)
+            val businessDetails = businessDetailsRestMapper.map(businessDetailsResponse)
             val reviews = reviewRestMapper.map(businessReviewsResponse.reviews)
             emit(businessDetails.copy(reviews = reviews))
         }

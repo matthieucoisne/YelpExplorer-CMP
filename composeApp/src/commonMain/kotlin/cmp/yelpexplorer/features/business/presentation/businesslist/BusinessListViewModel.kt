@@ -13,9 +13,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import org.jetbrains.compose.resources.getString
-import yelpexplorer_cmp.composeapp.generated.resources.Res
-import yelpexplorer_cmp.composeapp.generated.resources.error_something_went_wrong
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BusinessListViewModel(
@@ -47,11 +44,7 @@ class BusinessListViewModel(
             businessList = businessListMapper.map(it)
         )
     }.catch {
-        emit(
-            BusinessListViewState.ShowError(
-                error = it.message ?: getString(Res.string.error_something_went_wrong)
-            )
-        )
+        emit(BusinessListViewState.ShowError)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,

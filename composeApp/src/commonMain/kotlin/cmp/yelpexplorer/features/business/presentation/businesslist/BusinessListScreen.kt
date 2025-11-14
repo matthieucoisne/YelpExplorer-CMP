@@ -55,6 +55,7 @@ import yelpexplorer_cmp.composeapp.generated.resources.Res
 import yelpexplorer_cmp.composeapp.generated.resources.app_name
 import yelpexplorer_cmp.composeapp.generated.resources.business_name
 import yelpexplorer_cmp.composeapp.generated.resources.business_reviews_count
+import yelpexplorer_cmp.composeapp.generated.resources.error_something_went_wrong
 import yelpexplorer_cmp.composeapp.generated.resources.loading
 import yelpexplorer_cmp.composeapp.generated.resources.placeholder_business_list
 import yelpexplorer_cmp.composeapp.generated.resources.stars_small_4_half
@@ -110,7 +111,7 @@ fun BusinessListContent(
             is BusinessListViewState.ShowError -> {
                 CenteredText(
                     modifier = Modifier.padding(innerPadding),
-                    text = viewState.error
+                    text = stringResource(Res.string.error_something_went_wrong)
                 )
             }
 
@@ -300,7 +301,7 @@ fun PreviewLoading() {
 fun PreviewError() {
     YelpExplorerTheme(darkTheme = true) {
         BusinessListContent(
-            viewState = BusinessListViewState.ShowError("Oops! Something went wrong"),
+            viewState = BusinessListViewState.ShowError,
             onEvent = {}
         )
     }

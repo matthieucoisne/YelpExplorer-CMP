@@ -1,25 +1,33 @@
 package cmp.yelpexplorer.features.business.data.rest.mapper
 
-import cmp.yelpexplorer.core.utils.DateTimeFormater
-import cmp.yelpexplorer.features.business.domain.model.Business
+import cmp.yelpexplorer.core.utils.DateTimeFormatter
+import cmp.yelpexplorer.core.utils.Mapper
 import cmp.yelpexplorer.features.business.data.rest.model.BusinessEntity
+import cmp.yelpexplorer.features.business.domain.model.Business
 
-class BusinessRestMapper(
-    private val dateTimeFormater: DateTimeFormater,
-) {
-    fun map(businessEntities: List<BusinessEntity>): List<Business> {
-        return businessEntities.map {
-            it.toDomainModel(dateTimeFormater)
+interface BusinessListRestMapper : Mapper<List<BusinessEntity>, List<Business>>
+interface BusinessDetailsRestMapper : Mapper<BusinessEntity, Business>
+
+class BusinessListRestMapperImpl(
+    private val dateTimeFormatter: DateTimeFormatter,
+): BusinessListRestMapper {
+    override suspend fun map(input: List<BusinessEntity>): List<Business> {
+        return input.map {
+            it.toDomainModel(dateTimeFormatter)
         }
     }
+}
 
-    fun map(businessEntity: BusinessEntity): Business {
-        return businessEntity.toDomainModel(dateTimeFormater)
+class BusinessDetailsRestMapperImpl(
+    private val dateTimeFormatter: DateTimeFormatter,
+): BusinessDetailsRestMapper {
+    override suspend fun map(input: BusinessEntity): Business {
+        return input.toDomainModel(dateTimeFormatter)
     }
 }
 
 private fun BusinessEntity.toDomainModel(
-    dateTimeFormater: DateTimeFormater,
+    dateTimeFormatter: DateTimeFormatter,
 ) = Business(
     id = id,
     name = name,
@@ -35,8 +43,8 @@ private fun BusinessEntity.toDomainModel(
                 it.day
             }.mapValues {
                 it.value.map { open ->
-                    val start = dateTimeFormater.formatTime(open.start)
-                    val end = dateTimeFormater.formatTime(open.end)
+                    val start = dateTimeFormatter.formatTime(open.start)
+                    val end = dateTimeFormatter.formatTime(open.end)
                     "$start - $end"
                 }
             }

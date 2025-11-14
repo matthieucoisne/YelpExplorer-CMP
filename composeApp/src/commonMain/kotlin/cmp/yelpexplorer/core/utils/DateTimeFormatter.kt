@@ -6,12 +6,17 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 
-class DateTimeFormater {
-    fun formatDate(dateTime: String): String {
+interface DateTimeFormatter {
+    fun formatDate(dateTime: String): String
+    fun formatTime(time: String): String
+}
+
+class DateTimeFormatterImpl : DateTimeFormatter {
+    override fun formatDate(dateTime: String): String {
         return dateFormatter.format(dateTimeParser.parse(dateTime).date)
     }
 
-    fun formatTime(time: String): String {
+    override fun formatTime(time: String): String {
         return timeFormatter.format(timeParser.parse(time))
     }
 

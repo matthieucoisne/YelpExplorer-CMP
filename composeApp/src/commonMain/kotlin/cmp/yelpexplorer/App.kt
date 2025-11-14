@@ -2,40 +2,15 @@ package cmp.yelpexplorer
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cmp.yelpexplorer.core.navigation.Routes
-import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsScreen
-import cmp.yelpexplorer.features.business.presentation.businesslist.BusinessListScreen
+import cmp.yelpexplorer.core.navigation.MainNavHost
+import cmp.yelpexplorer.core.theme.YelpExplorerTheme
 
 @Composable
 fun App(
     navController: NavHostController = rememberNavController()
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Routes.BusinessList.route,
-    ) {
-        composable(
-            route = Routes.BusinessList.route
-        ) {
-            BusinessListScreen(
-                onBusinessClicked = { businessId ->
-                    navController.navigate(
-                        route = Routes.BusinessDetails.createRoute(businessId)
-                    )
-                }
-            )
-        }
-
-        composable(
-            route = Routes.BusinessDetails.route,
-            arguments = Routes.BusinessDetails.navArguments
-        ) {
-            BusinessDetailsScreen(
-                onBackPressed = { navController.navigateUp() }
-            )
-        }
+    YelpExplorerTheme(darkTheme = true) {
+        MainNavHost(navController)
     }
 }

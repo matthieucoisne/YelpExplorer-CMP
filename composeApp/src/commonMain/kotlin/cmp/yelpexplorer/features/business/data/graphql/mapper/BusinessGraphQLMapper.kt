@@ -2,50 +2,58 @@ package cmp.yelpexplorer.features.business.data.graphql.mapper
 
 import cmp.yelpexplorer.BusinessDetailsQuery
 import cmp.yelpexplorer.BusinessListQuery
-import cmp.yelpexplorer.core.utils.DateTimeFormater
+import cmp.yelpexplorer.core.utils.DateTimeFormatter
+import cmp.yelpexplorer.core.utils.Mapper
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.model.Review
 import cmp.yelpexplorer.features.business.domain.model.User
 import cmp.yelpexplorer.fragment.BusinessDetails
 import cmp.yelpexplorer.fragment.BusinessSummary
 
-class BusinessGraphQLMapper(
-    private val dateTimeFormater: DateTimeFormater,
-) {
-    fun map(businessList: List<BusinessListQuery.Business?>): List<Business> {
-        return businessList.mapNotNull {
-            it?.toDomainModel(dateTimeFormater)
+interface BusinessListGraphQLMapper : Mapper<List<BusinessListQuery.Business?>, List<Business>>
+interface BusinessDetailsGraphQLMapper : Mapper<BusinessDetailsQuery.Business, Business>
+
+class BusinessListGraphQLMapperImpl(
+    private val dateTimeFormatter: DateTimeFormatter,
+): BusinessListGraphQLMapper {
+    override suspend fun map(input: List<BusinessListQuery.Business?>): List<Business> {
+        return input.mapNotNull {
+            it?.toDomainModel(dateTimeFormatter)
         }
     }
+}
 
-    fun map(business: BusinessDetailsQuery.Business): Business {
-        return business.toDomainModel(dateTimeFormater)
+class BusinessDetailsGraphQLMapperImpl(
+    private val dateTimeFormatter: DateTimeFormatter,
+): BusinessDetailsGraphQLMapper {
+    override suspend fun map(input: BusinessDetailsQuery.Business): Business {
+        return input.toDomainModel(dateTimeFormatter)
     }
 }
 
 private fun BusinessListQuery.Business.toDomainModel(
-    dateTimeFormater: DateTimeFormater,
+    dateTimeFormatter: DateTimeFormatter,
 ): Business {
     return mapToBusiness(
         summary = businessSummary,
-        dateTimeFormater = dateTimeFormater,
+        dateTimeFormatter = dateTimeFormatter,
     )
 }
 
 private fun BusinessDetailsQuery.Business.toDomainModel(
-    dateTimeFormater: DateTimeFormater,
+    dateTimeFormatter: DateTimeFormatter,
 ): Business {
     return mapToBusiness(
         summary = businessSummary,
         details = businessDetails,
-        dateTimeFormater = dateTimeFormater,
+        dateTimeFormatter = dateTimeFormatter,
     )
 }
 
 private fun mapToBusiness(
     summary: BusinessSummary,
     details: BusinessDetails? = null,
-    dateTimeFormater: DateTimeFormater,
+    dateTimeFormatter: DateTimeFormatter,
 ) = Business(
     id = summary.id!!,
     name = summary.name!!,
@@ -61,8 +69,8 @@ private fun mapToBusiness(
                 it!!.day!!
             }?.mapValues {
                 it.value.map { open ->
-                    val start = dateTimeFormater.formatTime(open?.start!!)
-                    val end = dateTimeFormater.formatTime(open.end!!)
+                    val start = dateTimeFormatter.formatTime(open?.start!!)
+                    val end = dateTimeFormatter.formatTime(open.end!!)
                     "$start - $end"
                 }
             }
@@ -75,9 +83,9 @@ private fun mapToBusiness(
             val user = it!!.user!!
             Review(
                 user = User(user.name!!, user.image_url),
-                text = it.text!!,
+                text = it.text!!.replace("\\n+".toRegex(), "\n"),
                 rating = it.rating!!,
-                timeCreated = dateTimeFormater.formatDate(it.time_created!!)
+                timeCreated = dateTimeFormatter.formatDate(it.time_created!!),
             )
         }
     }

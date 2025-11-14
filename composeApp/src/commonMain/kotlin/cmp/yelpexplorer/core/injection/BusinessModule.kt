@@ -2,21 +2,30 @@ package cmp.yelpexplorer.core.injection
 
 import cmp.yelpexplorer.core.utils.Const
 import cmp.yelpexplorer.core.utils.DataSource
+import cmp.yelpexplorer.core.utils.DateTimeFormatter
+import cmp.yelpexplorer.core.utils.DateTimeFormatterImpl
 import cmp.yelpexplorer.core.utils.ResourceProvider
-import cmp.yelpexplorer.core.utils.DateTimeFormater
+import cmp.yelpexplorer.core.utils.ResourceProviderImpl
 import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSource
 import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSourceImpl
-import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessDetailsGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessDetailsGraphQLMapperImpl
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessListGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessListGraphQLMapperImpl
 import cmp.yelpexplorer.features.business.data.graphql.repository.BusinessGraphQLRepository
 import cmp.yelpexplorer.features.business.data.rest.datasource.remote.BusinessRestDataSource
 import cmp.yelpexplorer.features.business.data.rest.datasource.remote.BusinessRestDataSourceImpl
-import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessDetailsRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessDetailsRestMapperImpl
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessListRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.BusinessListRestMapperImpl
 import cmp.yelpexplorer.features.business.data.rest.mapper.ReviewRestMapper
+import cmp.yelpexplorer.features.business.data.rest.mapper.ReviewRestMapperImpl
 import cmp.yelpexplorer.features.business.data.rest.repository.BusinessRestRepository
 import cmp.yelpexplorer.features.business.domain.repository.BusinessRepository
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCase
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCaseImpl
+import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCaseImpl
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsMapper
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsMapperImpl
@@ -41,18 +50,20 @@ val businessModule = module {
     singleOf(::BusinessListMapperImpl).bind(BusinessListMapper::class)
     singleOf(::BusinessDetailsMapperImpl).bind(BusinessDetailsMapper::class)
 
-    singleOf(::DateTimeFormater)
-    singleOf(::ResourceProvider)
+    singleOf(::DateTimeFormatterImpl).bind(DateTimeFormatter::class)
+    singleOf(::ResourceProviderImpl).bind(ResourceProvider::class)
 
     when (Const.DATASOURCE) {
         DataSource.REST -> {
             singleOf(::BusinessRestDataSourceImpl).bind(BusinessRestDataSource::class)
-            singleOf(::BusinessRestMapper)
-            singleOf(::ReviewRestMapper)
+            singleOf(::BusinessListRestMapperImpl).bind(BusinessListRestMapper::class)
+            singleOf(::BusinessDetailsRestMapperImpl).bind(BusinessDetailsRestMapper::class)
+            singleOf(::ReviewRestMapperImpl).bind(ReviewRestMapper::class)
             single<BusinessRepository> {
                 BusinessRestRepository(
                     businessRestDataSource = get(),
-                    businessRestMapper = get(),
+                    businessListRestMapper = get(),
+                    businessDetailsRestMapper = get(),
                     reviewRestMapper = get(),
                     ioDispatcher = get(named(Const.DISPATCHER_IO))
                 )
@@ -60,11 +71,13 @@ val businessModule = module {
         }
         DataSource.GRAPHQL -> {
             singleOf(::BusinessGraphQLDataSourceImpl).bind(BusinessGraphQLDataSource::class)
-            singleOf(::BusinessGraphQLMapper)
+            singleOf(::BusinessListGraphQLMapperImpl).bind(BusinessListGraphQLMapper::class)
+            singleOf(::BusinessDetailsGraphQLMapperImpl).bind(BusinessDetailsGraphQLMapper::class)
             single<BusinessRepository> {
                 BusinessGraphQLRepository(
                     businessGraphQLDataSource = get(),
-                    businessGraphQLMapper = get(),
+                    businessListGraphQLMapper = get(),
+                    businessDetailsGraphQLMapper = get(),
                     ioDispatcher = get(named(Const.DISPATCHER_IO))
                 )
             }

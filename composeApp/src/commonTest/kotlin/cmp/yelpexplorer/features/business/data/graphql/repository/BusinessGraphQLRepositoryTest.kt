@@ -1,64 +1,73 @@
 package cmp.yelpexplorer.features.business.data.graphql.repository
 
 import app.cash.turbine.test
-import cmp.yelpexplorer.core.utils.DateTimeFormater
-import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSourceImpl
-import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessGraphQLMapper
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.mockserver.MockServer
-import com.apollographql.mockserver.MockResponse
-import cmp.yelpexplorer.utils.FileUtils
-import com.apollographql.apollo.exception.NoDataException
-import com.apollographql.mockserver.enqueueError
+import cmp.yelpexplorer.BusinessDetailsQuery
+import cmp.yelpexplorer.BusinessListQuery
+import cmp.yelpexplorer.features.business.data.graphql.datasource.remote.BusinessGraphQLDataSource
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessDetailsGraphQLMapper
+import cmp.yelpexplorer.features.business.data.graphql.mapper.BusinessListGraphQLMapper
+import cmp.yelpexplorer.features.business.domain.model.Business
+import cmp.yelpexplorer.utils.fakeDomainBusiness
+import cmp.yelpexplorer.utils.fakeDomainBusinessDetailsWithReviews
+import cmp.yelpexplorer.utils.fakeGraphQLBusinessDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlin.reflect.typeOf
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
+class BusinessGraphQLRepositoryTest {
 
-    private lateinit var mockServer: MockServer
-    private lateinit var repository: BusinessGraphQLRepository
+    private class FakeGraphQLDataSource(
+        private val error: Exception? = null,
+    ) : BusinessGraphQLDataSource {
+        override suspend fun getBusinessList(
+            term: String,
+            location: String,
+            sortBy: String,
+            limit: Int,
+        ): List<BusinessListQuery.Business> {
+            if (error != null) throw error
+            return emptyList() // We only care about the mapper output
+        }
 
-    private fun getApolloClient(mockServer: MockServer): ApolloClient {
-        return runBlocking {
-            ApolloClient.Builder()
-                .serverUrl(serverUrl = mockServer.url())
-                .build()
+        override suspend fun getBusinessDetails(businessId: String): BusinessDetailsQuery.Business {
+            if (error != null) throw error
+            return fakeGraphQLBusinessDetails
         }
     }
 
-    @BeforeTest
-    fun before() {
-        mockServer = MockServer()
-        repository = BusinessGraphQLRepository(
-            businessGraphQLDataSource = BusinessGraphQLDataSourceImpl(getApolloClient(mockServer)),
-            businessGraphQLMapper = BusinessGraphQLMapper(DateTimeFormater()),
-            ioDispatcher = UnconfinedTestDispatcher(),
-        )
+    private class FakeBusinessListGraphQLMapper(
+        private val result: List<Business>? = null,
+        private val error: Exception? = null,
+    ) : BusinessListGraphQLMapper {
+        override suspend fun map(input: List<BusinessListQuery.Business?>): List<Business> {
+            if (error != null) throw error
+            return result!!
+        }
     }
 
-    @AfterTest
-    fun after() {
-        mockServer.close()
+    private class FakeBusinessDetailsGraphQLMapper(
+        private val result: Business? = null,
+        private val error: Exception? = null,
+    ) : BusinessDetailsGraphQLMapper {
+        override suspend fun map(input: BusinessDetailsQuery.Business): Business {
+            if (error != null) throw error
+            return result!!
+        }
     }
 
     @Test
     fun `get business list success`() = runTest {
         // ARRANGE
-        val jsonBusiness = FileUtils.getStringFromPath(filePath = "responses/graphql/businessList.json")
-        mockServer.enqueue(
-            MockResponse.Builder()
-                .body(body = jsonBusiness)
-                .build()
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(
+                result = listOf(fakeDomainBusiness),
+            ),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(),
+            ioDispatcher = UnconfinedTestDispatcher(),
         )
 
         // ACT
@@ -66,13 +75,13 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
             term = "term",
             location = "location",
             sortBy = "sortBy",
-            limit = 2
+            limit = 20,
         )
 
         // ASSERT
         result.test {
             assertEquals(
-                expected = listOf(expectedBusiness),
+                expected = listOf(fakeDomainBusiness),
                 actual = awaitItem(),
             )
             awaitComplete()
@@ -80,41 +89,84 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
     }
 
     @Test
-    fun `get business list error`() = runTest {
+    fun `get business list data source error`() = runTest {
         // ARRANGE
-        mockServer.enqueueError(500)
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(
+                error = Exception("error"),
+            ),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(),
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
 
         // ACT
         val result = repository.getBusinessList(
             term = "term",
             location = "location",
             sortBy = "sortBy",
-            limit = 2
+            limit = 20,
         )
-
-        // ASSERT
-        result.test {
-            assertTrue { awaitError() is NoDataException }
-        }
-    }
-
-    @Test
-    fun `get business details with reviews success`() = runTest {
-        // ARRANGE
-        val jsonBusinessDetailsWithReviews = FileUtils.getStringFromPath(filePath = "responses/graphql/businessDetailsWithReviews.json")
-        mockServer.enqueue(
-            MockResponse.Builder()
-                .body(body = jsonBusinessDetailsWithReviews)
-                .build()
-        )
-
-        // ACT
-        val result = repository.getBusinessDetailsWithReviews(businessId = "businessId")
 
         // ASSERT
         result.test {
             assertEquals(
-                expected = expectedBusinessDetailsWithReviews,
+                expected = "error",
+                actual = awaitError().message,
+            )
+        }
+    }
+
+    @Test
+    fun `get business list mapper error`() = runTest {
+        // ARRANGE
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(
+                error = Exception("error"),
+            ),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(),
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
+
+        // ACT
+        val result = repository.getBusinessList(
+            term = "term",
+            location = "location",
+            sortBy = "sortBy",
+            limit = 20,
+        )
+
+        // ASSERT
+        result.test {
+            assertEquals(
+                expected = "error",
+                actual = awaitError().message,
+            )
+        }
+    }
+
+    @Test
+    fun `get business details success`() = runTest {
+        // ARRANGE
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(
+                result = fakeDomainBusinessDetailsWithReviews,
+            ),
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
+
+        // ACT
+        val result = repository.getBusinessDetailsWithReviews(
+            businessId = "businessId",
+        )
+
+        // ASSERT
+        result.test {
+            assertEquals(
+                expected = fakeDomainBusinessDetailsWithReviews,
                 actual = awaitItem(),
             )
             awaitComplete()
@@ -122,16 +174,54 @@ class BusinessGraphQLRepositoryTest : BusinessRepositoryTest() {
     }
 
     @Test
-    fun `get business details with reviews error`() = runTest {
+    fun `get business details data source error`() = runTest {
         // ARRANGE
-        mockServer.enqueueError(500)
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(
+                error = Exception("error"),
+            ),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(),
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
 
         // ACT
-        val result = repository.getBusinessDetailsWithReviews(businessId = "businessId")
+        val result = repository.getBusinessDetailsWithReviews(
+            businessId = "businessId",
+        )
 
         // ASSERT
         result.test {
-            assertTrue { awaitError() is NoDataException }
+            assertEquals(
+                expected = "error",
+                actual = awaitError().message,
+            )
+        }
+    }
+
+    @Test
+    fun `get business details mapper error`() = runTest {
+        // ARRANGE
+        val repository = BusinessGraphQLRepository(
+            businessGraphQLDataSource = FakeGraphQLDataSource(),
+            businessListGraphQLMapper = FakeBusinessListGraphQLMapper(),
+            businessDetailsGraphQLMapper = FakeBusinessDetailsGraphQLMapper(
+                error = Exception("error"),
+            ),
+            ioDispatcher = UnconfinedTestDispatcher(),
+        )
+
+        // ACT
+        val result = repository.getBusinessDetailsWithReviews(
+            businessId = "businessId",
+        )
+
+        // ASSERT
+        result.test {
+            assertEquals(
+                expected = "error",
+                actual = awaitError().message,
+            )
         }
     }
 }
