@@ -21,17 +21,27 @@ class BusinessRestDataSourceImpl(
         location: String,
         sortBy: String,
         limit: Int,
-    ): BusinessListResponse =
-        httpClient.get("businesses/search") {
-            parameter("term", term)
-            parameter("location", location)
-            parameter("sortBy", sortBy)
-            parameter("limit", "$limit")
-        }.body()
+    ): BusinessListResponse {
+        return try {
+            httpClient.get("businesses/search") {
+                parameter("term", term)
+                parameter("location", location)
+                parameter("sortBy", sortBy)
+                parameter("limit", "$limit")
+            }.body()
+        } catch (ex: Exception){
+            throw ex
+        }
+    }
 
-    override suspend fun getBusinessDetails(businessId: String): BusinessEntity =
-        httpClient.get("businesses/$businessId").body()
+    override suspend fun getBusinessDetails(businessId: String): BusinessEntity {
+        return httpClient.get("businesses/$businessId").body()
+    }
 
-    override suspend fun getBusinessReviews(businessId: String): ReviewListResponse =
-        httpClient.get("businesses/$businessId/reviews").body()
+    override suspend fun getBusinessReviews(businessId: String): ReviewListResponse {
+        return httpClient.get("businesses/$businessId/reviews").body()
+    }
 }
+// TODO error handling to have something more generic surfaced to the user rather than
+//  something like "illegal input field" trying to parse the json response even
+//  if our API KEY is not valid for example

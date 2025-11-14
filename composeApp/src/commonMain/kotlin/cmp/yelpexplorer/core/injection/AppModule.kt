@@ -10,6 +10,7 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
@@ -44,6 +45,8 @@ val appModule = module {
     )
 }
 
+expect fun httpClient(config: HttpClientConfig<*>.() -> Unit): HttpClient
+
 private fun provideHttpClient(serverUrl: String): HttpClient {
     return httpClient {
         install(HttpTimeout) {
@@ -52,6 +55,11 @@ private fun provideHttpClient(serverUrl: String): HttpClient {
         }
 
         install(Logging) {
+            logger = object: Logger {
+                override fun log(message: String) {
+                    println(message)
+                }
+            }
             level = LogLevel.ALL
         }
 
@@ -76,9 +84,7 @@ private fun provideHttpClient(serverUrl: String): HttpClient {
     }
 }
 
-expect fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
-
-fun provideApolloClient(httpClient: HttpClient): ApolloClient {
+private fun provideApolloClient(httpClient: HttpClient): ApolloClient {
     return ApolloClient.Builder()
         .serverUrl(Const.URL_GRAPHQL) // Required even if HttpClient has been set up with the url already.
         .ktorClient(httpClient)

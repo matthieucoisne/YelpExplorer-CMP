@@ -4,7 +4,6 @@ import cmp.yelpexplorer.core.utils.Mapper
 import cmp.yelpexplorer.core.utils.ResourceProvider
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.model.Review
-import org.jetbrains.compose.resources.getString
 import yelpexplorer_cmp.composeapp.generated.resources.Res
 import yelpexplorer_cmp.composeapp.generated.resources.closed
 
@@ -36,7 +35,8 @@ private suspend fun Business.toBusinessDetailsUiModel(
     openingHours = buildMap {
         for (i in 0..6) {
             val day = resourceProvider.getDayName(i)
-            this[day] = hours?.get(i)?.joinToString(separator = "\n") ?: getString(Res.string.closed)
+            this[day] = hours?.get(i)?.joinToString(separator = "\n")
+                ?: resourceProvider.getResourceString(Res.string.closed)
         }
     },
     reviews = reviews?.map {

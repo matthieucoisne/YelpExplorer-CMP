@@ -3,6 +3,7 @@ package cmp.yelpexplorer.features.business.presentation.businessdetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,13 +27,15 @@ class BusinessDetailsViewModel(
 
     val viewState = businessId.filterNotNull().flatMapLatest {
         businessDetailsUseCase.execute(businessId = it)
-    }.map {
+    }.map<Business, BusinessDetailsViewState> {
         BusinessDetailsViewState.ShowBusinessDetails(
             businessDetails = businessDetailsMapper.map(it),
         )
     }.catch {
-        BusinessDetailsViewState.ShowError(
-            error = it.message ?: getString(Res.string.error_something_went_wrong),
+        emit(
+            BusinessDetailsViewState.ShowError(
+                error = it.message ?: getString(Res.string.error_something_went_wrong),
+            )
         )
     }.stateIn(
         scope = viewModelScope,
