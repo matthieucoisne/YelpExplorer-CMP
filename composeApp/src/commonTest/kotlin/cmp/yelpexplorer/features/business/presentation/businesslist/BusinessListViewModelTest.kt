@@ -4,13 +4,21 @@ import app.cash.turbine.test
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
 import cmp.yelpexplorer.utils.fakeBusinessListUiModel
+import cmp.yelpexplorer.utils.fakeDomainBusiness
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BusinessListViewModelTest {
+
+    private val testDispatcher = StandardTestDispatcher()
 
     private class FakeBusinessListUseCase(
         private val error: Exception? = null,
@@ -22,7 +30,7 @@ class BusinessListViewModelTest {
             limit: Int,
         ): Flow<List<Business>> = flow {
             if (error != null) throw error
-            emit(emptyList())
+            emit(listOf(fakeDomainBusiness))
         }
     }
 
@@ -35,11 +43,12 @@ class BusinessListViewModelTest {
     }
 
     @Test
-    fun `viewState is ShowLoading then ShowBusinessList`() = runTest {
+    fun `viewState is ShowLoading then ShowBusinessList`() = runTest(testDispatcher) {
         // ARRANGE
         val viewModel = BusinessListViewModel(
             businessListUseCase = FakeBusinessListUseCase(),
             businessListMapper = FakeBusinessListMapper(fakeBusinessListUiModel),
+            mainDispatcher = testDispatcher,
         )
 
         // ACT & ASSERT
@@ -48,6 +57,7 @@ class BusinessListViewModelTest {
                 expected = BusinessListViewState.ShowLoading,
                 actual = awaitItem(),
             )
+            advanceUntilIdle()
             assertEquals(
                 expected = BusinessListViewState.ShowBusinessList(
                     businessList = fakeBusinessListUiModel,
@@ -59,13 +69,14 @@ class BusinessListViewModelTest {
     }
 
     @Test
-    fun `viewState is ShowLoading then ShowError`() = runTest {
+    fun `viewState is ShowLoading then ShowError`() = runTest(testDispatcher) {
         // ARRANGE
         val viewModel = BusinessListViewModel(
             businessListUseCase = FakeBusinessListUseCase(
                 error = Exception(),
             ),
             businessListMapper = FakeBusinessListMapper(),
+            mainDispatcher = testDispatcher,
         )
 
         // ACT & ASSERT
@@ -74,6 +85,7 @@ class BusinessListViewModelTest {
                 expected = BusinessListViewState.ShowLoading,
                 actual = awaitItem(),
             )
+            advanceUntilIdle()
             assertEquals(
                 expected = BusinessListViewState.ShowError,
                 actual = awaitItem(),

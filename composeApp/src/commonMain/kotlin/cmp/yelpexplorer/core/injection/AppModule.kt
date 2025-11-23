@@ -22,6 +22,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dispatcherModule = module {
+    single<CoroutineDispatcher>(named(Const.DISPATCHER_MAIN)) { Dispatchers.Main }
     single<CoroutineDispatcher>(named(Const.DISPATCHER_IO)) { Dispatchers.IO }
 }
 

@@ -38,16 +38,14 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business list success`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.OK,
-                    headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
-                    content = FileUtils.getStringFromPath(
-                        filePath = "responses/rest/getBusinessList.json",
-                    ),
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.OK,
+                headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
+                content = FileUtils.getStringFromPath(
+                    filePath = "responses/rest/getBusinessList.json",
+                ),
+            )
         }
         val expectedBusinessListResponse = FileUtils.getDataFromPath<BusinessListResponse>(
             filePath = "responses/rest/getBusinessList.json",
@@ -74,13 +72,11 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business list error`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.InternalServerError,
-                    content = "",
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.InternalServerError,
+                content = "",
+            )
         }
         val dataSource = BusinessRestDataSourceImpl(
             httpClient = getFakeHttpClient(mockEngine = mockEngine),
@@ -100,16 +96,14 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business details success`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.OK,
-                    headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
-                    content = FileUtils.getStringFromPath(
-                        filePath = "responses/rest/getBusinessDetails.json",
-                    ),
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.OK,
+                headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
+                content = FileUtils.getStringFromPath(
+                    filePath = "responses/rest/getBusinessDetails.json",
+                ),
+            )
         }
         val expectedBusinessEntity = FileUtils.getDataFromPath<BusinessEntity>(
             filePath = "responses/rest/getBusinessDetails.json",
@@ -133,13 +127,11 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business details error`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.InternalServerError,
-                    content = "",
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.InternalServerError,
+                content = "",
+            )
         }
         val dataSource = BusinessRestDataSourceImpl(
             httpClient = getFakeHttpClient(mockEngine = mockEngine),
@@ -156,16 +148,14 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business reviews success`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.OK,
-                    headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
-                    content = FileUtils.getStringFromPath(
-                        filePath = "responses/rest/getBusinessReviews.json",
-                    ),
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.OK,
+                headers = headersOf(name = HttpHeaders.ContentType, value = "application/json"),
+                content = FileUtils.getStringFromPath(
+                    filePath = "responses/rest/getBusinessReviews.json",
+                ),
+            )
         }
         val expectedReviewListResponse = FileUtils.getDataFromPath<ReviewListResponse>(
             filePath = "responses/rest/getBusinessReviews.json",
@@ -189,13 +179,11 @@ class BusinessRestDataSourceTest {
     @Test
     fun `get business reviews error`() = runTest {
         // ARRANGE
-        val mockEngine = MockEngine.Queue().apply {
-            enqueue {
-                respond(
-                    status = HttpStatusCode.InternalServerError,
-                    content = "",
-                )
-            }
+        val mockEngine = MockEngine {
+            respond(
+                status = HttpStatusCode.InternalServerError,
+                content = "",
+            )
         }
         val dataSource = BusinessRestDataSourceImpl(
             httpClient = getFakeHttpClient(mockEngine = mockEngine),

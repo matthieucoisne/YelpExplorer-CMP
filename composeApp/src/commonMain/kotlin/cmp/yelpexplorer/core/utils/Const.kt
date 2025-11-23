@@ -10,6 +10,7 @@ object Const {
     // TODO: Add your API KEY - https://docs.developer.yelp.com/docs/fusion-authentication
     const val API_KEY = "YOUR_API_KEY"
 
+    const val DISPATCHER_MAIN = "DISPATCHER_MAIN"
     const val DISPATCHER_IO = "DISPATCHER_IO"
 }
 

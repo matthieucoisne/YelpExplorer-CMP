@@ -17,7 +17,7 @@ I then thought it would be a great experience to port this Compose MultiPlatform
 about all the different technologies that exist to build multiplatform applications.
 
 This project is available in:<br/>
-[Compose/Kotlin Multiplatform](https://github.com/matthieucoisne/YelpExplorer-CMP)<br/>
+[Compose Multiplatform/Kotlin](https://github.com/matthieucoisne/YelpExplorer-CMP)<br/>
 [Flutter/Dart](https://github.com/matthieucoisne/YelpExplorer-Flutter)<br/>
 [ReactNative/TypeScript](https://github.com/matthieucoisne/YelpExplorer-ReactNative)<br/>
 
@@ -32,6 +32,7 @@ This project is available in:<br/>
 * 100% [Kotlin](https://kotlinlang.org/)
 * Modern architecture (Clean Architecture, Model-View-Intent, Dependency Injection)
 * Declarative UI framework using [Jetpack Compose](https://developer.android.com/jetpack/compose)
+* Reactive streams with Coroutine Flows
 * Testing
 * Material design
 * Continuous Integration with GitHub [Actions](https://github.com/matthieucoisne/YelpExplorer-CMP/actions)
