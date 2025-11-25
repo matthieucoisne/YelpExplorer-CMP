@@ -23,10 +23,10 @@ import cmp.yelpexplorer.features.business.data.rest.mapper.ReviewRestMapper
 import cmp.yelpexplorer.features.business.data.rest.mapper.ReviewRestMapperImpl
 import cmp.yelpexplorer.features.business.data.rest.repository.BusinessRestRepository
 import cmp.yelpexplorer.features.business.domain.repository.BusinessRepository
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCase
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessDetailsUseCaseImpl
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCaseImpl
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessDetailsUseCase
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessDetailsUseCaseImpl
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessListUseCase
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessListUseCaseImpl
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsMapper
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsMapperImpl
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsViewModel
@@ -44,15 +44,15 @@ import org.koin.dsl.module
 val businessModule = module {
     viewModel<BusinessListViewModel> {
         BusinessListViewModel(
-            businessListUseCase = get(),
+            getBusinessListUseCase = get(),
             businessListMapper = get(),
             mainDispatcher = get(named(Const.DISPATCHER_MAIN))
         )
     }
     viewModelOf(::BusinessDetailsViewModel)
 
-    factoryOf(::BusinessListUseCaseImpl).bind(BusinessListUseCase::class)
-    factoryOf(::BusinessDetailsUseCaseImpl).bind(BusinessDetailsUseCase::class)
+    factoryOf(::GetBusinessListUseCaseImpl).bind(GetBusinessListUseCase::class)
+    factoryOf(::GetBusinessDetailsUseCaseImpl).bind(GetBusinessDetailsUseCase::class)
 
     singleOf(::BusinessListMapperImpl).bind(BusinessListMapper::class)
     singleOf(::BusinessDetailsMapperImpl).bind(BusinessDetailsMapper::class)

@@ -2,14 +2,13 @@ package cmp.yelpexplorer.features.business.presentation.businesslist
 
 import app.cash.turbine.test
 import cmp.yelpexplorer.features.business.domain.model.Business
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessListUseCase
 import cmp.yelpexplorer.utils.fakeBusinessListUiModel
 import cmp.yelpexplorer.utils.fakeDomainBusiness
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -20,10 +19,10 @@ class BusinessListViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private class FakeBusinessListUseCase(
+    private class GetFakeBusinessListUseCase(
         private val error: Exception? = null,
-    ) : BusinessListUseCase {
-        override fun execute(
+    ) : GetBusinessListUseCase {
+        override fun invoke(
             term: String,
             location: String,
             sortBy: String,
@@ -46,7 +45,7 @@ class BusinessListViewModelTest {
     fun `viewState is ShowLoading then ShowBusinessList`() = runTest(testDispatcher) {
         // ARRANGE
         val viewModel = BusinessListViewModel(
-            businessListUseCase = FakeBusinessListUseCase(),
+            getBusinessListUseCase = GetFakeBusinessListUseCase(),
             businessListMapper = FakeBusinessListMapper(fakeBusinessListUiModel),
             mainDispatcher = testDispatcher,
         )
@@ -72,7 +71,7 @@ class BusinessListViewModelTest {
     fun `viewState is ShowLoading then ShowError`() = runTest(testDispatcher) {
         // ARRANGE
         val viewModel = BusinessListViewModel(
-            businessListUseCase = FakeBusinessListUseCase(
+            getBusinessListUseCase = GetFakeBusinessListUseCase(
                 error = Exception(),
             ),
             businessListMapper = FakeBusinessListMapper(),

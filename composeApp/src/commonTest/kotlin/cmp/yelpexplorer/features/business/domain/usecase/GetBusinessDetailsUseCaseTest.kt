@@ -10,7 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class BusinessDetailsUseCaseTest {
+class GetBusinessDetailsUseCaseTest {
 
     private class FakeBusinessRepository(
         private val result: Business? = null,
@@ -34,14 +34,14 @@ class BusinessDetailsUseCaseTest {
     @Test
     fun `execute with success`() = runTest {
         // ARRANGE
-        val useCase = BusinessDetailsUseCaseImpl(
+        val getBusinessDetailsUseCase = GetBusinessDetailsUseCaseImpl(
             businessRepository = FakeBusinessRepository(
                 result = fakeDomainBusinessDetailsWithReviews,
             )
         )
 
         // ACT
-        val result = useCase.execute(businessId = "businessId")
+        val result = getBusinessDetailsUseCase(businessId = "businessId")
 
         // ASSERT
         result.test {
@@ -57,14 +57,14 @@ class BusinessDetailsUseCaseTest {
     fun `execute with error`() = runTest {
         // ARRANGE
         val expectedResult = "error"
-        val useCase = BusinessDetailsUseCaseImpl(
+        val getBusinessDetailsUseCase = GetBusinessDetailsUseCaseImpl(
             businessRepository = FakeBusinessRepository(
                 error = Error(expectedResult),
             )
         )
 
         // ACT
-        val result = useCase.execute(businessId = "businessId")
+        val result = getBusinessDetailsUseCase(businessId = "businessId")
 
         // ASSERT
         result.test {

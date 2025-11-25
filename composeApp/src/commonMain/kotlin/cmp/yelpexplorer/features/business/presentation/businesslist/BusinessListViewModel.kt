@@ -3,7 +3,7 @@ package cmp.yelpexplorer.features.business.presentation.businesslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cmp.yelpexplorer.features.business.domain.model.Business
-import cmp.yelpexplorer.features.business.domain.usecase.BusinessListUseCase
+import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessListUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class BusinessListViewModel(
-    private val businessListUseCase: BusinessListUseCase,
+    private val getBusinessListUseCase: GetBusinessListUseCase,
     private val businessListMapper: BusinessListMapper,
     mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -36,7 +36,7 @@ class BusinessListViewModel(
     val viewState: StateFlow<BusinessListViewState> = searchParams
         .debounce(300L)
         .flatMapLatest { params ->
-            businessListUseCase.execute(
+            getBusinessListUseCase(
                 term = params.term,
                 location = params.location,
                 sortBy = params.sortBy,
@@ -51,7 +51,7 @@ class BusinessListViewModel(
         }.stateIn(
             scope = CoroutineScope(viewModelScope.coroutineContext + mainDispatcher),
             started = SharingStarted.Lazily,
-            initialValue = BusinessListViewState.ShowLoading
+            initialValue = BusinessListViewState.ShowLoading,
         )
 }
 

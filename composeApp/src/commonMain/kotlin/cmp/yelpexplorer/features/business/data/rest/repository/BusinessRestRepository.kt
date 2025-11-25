@@ -25,7 +25,7 @@ class BusinessRestRepository(
         term: String,
         location: String,
         sortBy: String,
-        limit: Int
+        limit: Int,
     ): Flow<List<Business>> = flow {
         val businessListResponse = businessRestDataSource.getBusinessList(
             term,
@@ -37,7 +37,7 @@ class BusinessRestRepository(
     }.flowOn(ioDispatcher)
 
     override fun getBusinessDetailsWithReviews(
-        businessId: String
+        businessId: String,
     ): Flow<Business> = flow {
         coroutineScope {
             val deferredBusinessDetails = async { businessRestDataSource.getBusinessDetails(businessId) }

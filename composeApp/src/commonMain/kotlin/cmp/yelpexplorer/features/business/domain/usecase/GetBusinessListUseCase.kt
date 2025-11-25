@@ -4,8 +4,8 @@ import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.repository.BusinessRepository
 import kotlinx.coroutines.flow.Flow
 
-interface BusinessListUseCase {
-    fun execute(
+interface GetBusinessListUseCase {
+    operator fun invoke(
         term: String,
         location: String,
         sortBy: String,
@@ -13,10 +13,10 @@ interface BusinessListUseCase {
     ): Flow<List<Business>>
 }
 
-class BusinessListUseCaseImpl(
+class GetBusinessListUseCaseImpl(
     private val businessRepository: BusinessRepository,
-) : BusinessListUseCase {
-    override fun execute(
+) : GetBusinessListUseCase {
+    override fun invoke(
         term: String,
         location: String,
         sortBy: String,
