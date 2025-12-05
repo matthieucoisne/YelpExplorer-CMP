@@ -36,7 +36,6 @@ import cmp.yelpexplorer.features.business.presentation.businesslist.BusinessList
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -49,7 +48,13 @@ val businessModule = module {
             mainDispatcher = get(named(Const.DISPATCHER_MAIN))
         )
     }
-    viewModelOf(::BusinessDetailsViewModel)
+    viewModel<BusinessDetailsViewModel> { params ->
+        BusinessDetailsViewModel(
+            businessId = params.get(),
+            getBusinessDetailsUseCase = get(),
+            businessDetailsMapper = get()
+        )
+    }
 
     factoryOf(::GetBusinessListUseCaseImpl).bind(GetBusinessListUseCase::class)
     factoryOf(::GetBusinessDetailsUseCaseImpl).bind(GetBusinessDetailsUseCase::class)
