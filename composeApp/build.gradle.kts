@@ -43,8 +43,10 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.nav3)
+            implementation(libs.androidx.navigation3.ui)
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.koin)

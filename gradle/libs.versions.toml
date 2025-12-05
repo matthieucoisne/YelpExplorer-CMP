@@ -3,8 +3,9 @@ agp = "8.13.1"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
-androidx-activityCompose = "1.11.0"
-androidx-lifecycle = "2.9.6"
+androidx-activityCompose = "1.12.1"
+androidx-lifecycle = "2.10.0-alpha06"
+androidx-nav3 = "1.0.0-alpha06"
 apollo = "4.3.3"
 apollo-engineKtor = "0.1.1"
 apollo-mockserver = "0.3.1"
@@ -16,14 +17,16 @@ kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serializationJson = "1.9.0"
-ktor = "3.3.2"
+ktor = "3.3.3"
 okio = "3.16.4"
 turbine = "1.2.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
+androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidx-nav3" }
 
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime" }
 apollo-engine-ktor = { module = "com.apollographql.ktor:apollo-engine-ktor", version.ref = "apollo-engineKtor" }
@@ -36,7 +39,6 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
-koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
@@ -70,7 +72,6 @@ koin = [
     "koin-core",
     "koin-compose",
     "koin-compose-viewmodel",
-    "koin-compose-viewmodel-navigation",
 ]
 ktor = [
     "ktor-client-core",
