@@ -1,6 +1,5 @@
 package cmp.yelpexplorer.features.business.presentation.businessdetails
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessDetailsUseCase
@@ -35,9 +34,7 @@ class BusinessDetailsViewModelTest {
     fun `viewState is ShowLoading then ShowBusinessDetails`() = runTest {
         // ARRANGE
         val viewModel = BusinessDetailsViewModel(
-            savedStateHandle = SavedStateHandle(
-                initialState = mapOf("businessId" to "businessId"),
-            ),
+            businessId = "businessId",
             getBusinessDetailsUseCase = GetFakeBusinessDetailsUseCase(),
             businessDetailsMapper = FakeBusinessDetailsMapper(
                 fakeBusinessDetailsUiModel,
@@ -65,9 +62,7 @@ class BusinessDetailsViewModelTest {
         // ARRANGE
         val expectedResult = "error"
         val viewModel = BusinessDetailsViewModel(
-            savedStateHandle = SavedStateHandle(
-                initialState = mapOf("businessId" to "businessId"),
-            ),
+            businessId = "businessId",
             getBusinessDetailsUseCase = GetFakeBusinessDetailsUseCase(
                 error = Exception(expectedResult),
             ),
