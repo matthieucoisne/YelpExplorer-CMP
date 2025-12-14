@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(
-                scrim = Color.White.toArgb(),
+                scrim = Color.Transparent.toArgb(),
             ),
         )
         setContent {
