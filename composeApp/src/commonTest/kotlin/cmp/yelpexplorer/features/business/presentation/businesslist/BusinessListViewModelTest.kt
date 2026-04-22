@@ -5,12 +5,17 @@ import cmp.yelpexplorer.features.business.domain.model.Business
 import cmp.yelpexplorer.features.business.domain.usecase.GetBusinessListUseCase
 import cmp.yelpexplorer.utils.fakeBusinessListUiModel
 import cmp.yelpexplorer.utils.fakeDomainBusiness
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,6 +23,16 @@ import kotlin.test.assertEquals
 class BusinessListViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private class GetFakeBusinessListUseCase(
         private val error: Exception? = null,
@@ -47,7 +62,6 @@ class BusinessListViewModelTest {
         val viewModel = BusinessListViewModel(
             getBusinessListUseCase = GetFakeBusinessListUseCase(),
             businessListMapper = FakeBusinessListMapper(fakeBusinessListUiModel),
-            mainDispatcher = testDispatcher,
         )
 
         // ACT & ASSERT
@@ -75,7 +89,6 @@ class BusinessListViewModelTest {
                 error = Exception(),
             ),
             businessListMapper = FakeBusinessListMapper(),
-            mainDispatcher = testDispatcher,
         )
 
         // ACT & ASSERT

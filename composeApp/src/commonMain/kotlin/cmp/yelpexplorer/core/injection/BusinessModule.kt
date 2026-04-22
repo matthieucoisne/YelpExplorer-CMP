@@ -45,7 +45,6 @@ val businessModule = module {
         BusinessListViewModel(
             getBusinessListUseCase = get(),
             businessListMapper = get(),
-            mainDispatcher = get(named(Const.DISPATCHER_MAIN))
         )
     }
     viewModel<BusinessDetailsViewModel> { params ->
