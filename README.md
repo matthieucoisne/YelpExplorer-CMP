@@ -1,8 +1,8 @@
 # YelpExplorer-CMP
 
 [![build](https://github.com/matthieucoisne/YelpExplorer-CMP/workflows/build/badge.svg)](https://github.com/matthieucoisne/YelpExplorer-CMP/blob/main/.github/workflows/build.yml)
-[![Kotlin Version](https://img.shields.io/badge/Kotlin-2.3.0-blue.svg)](https://kotlinlang.org)
-[![API](https://img.shields.io/badge/API-36%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=36)
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-2.3.20-blue.svg)](https://kotlinlang.org)
+[![API](https://img.shields.io/badge/API-37-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=37)
 
 ## Project Description
 
@@ -11,7 +11,7 @@ YelpExplorer-CMP is a Compose MultiPlatform project that shows a list of busines
 
 I originally created this project to learn about GraphQL but since Yelp is also serving its data with a REST API,
 I thought it would be a great opportunity to showcase the power of Clean Architecture when it comes to being able
-to swap one data layer for another without having to modify the domain and presentation layers.
+to swap one data layer for another, without having to modify the domain and presentation layers.
 
 I then thought it would be a great experience to port this Compose MultiPlatform project to Flutter and ReactNative to learn more
 about all the different technologies that exist to build multiplatform applications.
@@ -46,7 +46,7 @@ This project is available in:<br/>
     * [Flow](https://kotlinlang.org/docs/flow.html)
     * [Koin](https://github.com/InsertKoinIO/koin)
     * [Ktor](https://ktor.io)
-    * [ApolloGraphQL](https://github.com/apollographql/apollo-android)
+    * [Apollo GraphQL](https://github.com/apollographql/apollo-kotlin)
     * [Jetpack](https://developer.android.com/jetpack)
         * [Navigation](https://developer.android.com/guide/navigation)
         * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
@@ -62,7 +62,7 @@ This project is available in:<br/>
 
 ### Yelp API Key
 
-If you want to run this project on an device or an emulator, you need to obtain your own API key from Yelp and
+If you want to run this project on a device or an emulator, you need to obtain your own API key from Yelp and
 provide it to the app.
 
 1. Request your API key: [https://www.yelp.com/developers/documentation/v3/authentication](https://www.yelp.com/developers/documentation/v3/authentication)<br/>
