@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinMultiplatformAndroidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 
@@ -12,9 +12,22 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "cmp.yelpexplorer.composeapp"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.fromTarget(libs.versions.jvmTarget.get()))
+        }
+
+        androidResources {
+            enable = true
+        }
+
+        withHostTest {}
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
     
@@ -55,8 +68,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
         }
         androidMain.dependencies {
-            implementation(libs.androidx.activity.compose)
-
+            implementation(libs.compose.ui.tooling)
             implementation(libs.koin.android)
             implementation(libs.ktor.client.cio)
         }
@@ -77,37 +89,6 @@ kotlin {
             implementation(libs.turbine)
         }
     }
-}
-
-android {
-    namespace = "cmp.yelpexplorer"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "cmp.yelpexplorer"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-}
-
-dependencies {
-    debugImplementation(libs.compose.ui.tooling)
 }
 
 compose.desktop {

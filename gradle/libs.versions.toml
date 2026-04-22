@@ -1,8 +1,10 @@
 [versions]
-agp = "8.13.2"
 android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "37"
+jvmTarget = "21"
+agp = "9.2.0"
+
 androidx-activityCompose = "1.13.0"
 androidx-lifecycle = "2.10.0"
 androidx-nav3 = "1.1.0"
@@ -97,4 +99,5 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinMultiplatformAndroidLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
