@@ -8,6 +8,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import cmp.yelpexplorer.core.navigation.NavBackHandler
 import cmp.yelpexplorer.core.theme.YelpExplorerTheme
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsScreen
 import cmp.yelpexplorer.features.business.presentation.businessdetails.BusinessDetailsViewModel
@@ -24,6 +25,10 @@ data class BusinessDetailsRoute(val businessId: String) : NavKey
 @Composable
 fun App() {
     val backStack = remember { mutableStateListOf<Any>(BusinessListRoute) }
+
+    NavBackHandler(enabled = backStack.size > 1) {
+        backStack.removeLast()
+    }
 
     YelpExplorerTheme(darkTheme = true) {
         NavDisplay(
