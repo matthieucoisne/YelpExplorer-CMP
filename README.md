@@ -1,7 +1,7 @@
 # YelpExplorer-CMP
 
 [![build](https://github.com/matthieucoisne/YelpExplorer-CMP/workflows/build/badge.svg)](https://github.com/matthieucoisne/YelpExplorer-CMP/blob/main/.github/workflows/build.yml)
-[![Kotlin Version](https://img.shields.io/badge/Kotlin-2.3.20-blue.svg)](https://kotlinlang.org)
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-2.3.21-blue.svg)](https://kotlinlang.org)
 [![API](https://img.shields.io/badge/API-37-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=37)
 
 ## Project Description
