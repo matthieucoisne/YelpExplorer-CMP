@@ -1575,11 +1575,11 @@
           },
           {
             "name": "rating",
-            "description": "Rating of this review.",
+            "description": "Rating of this business (value ranges from 1, 1.5, ... 4.5, 5).",
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "Float",
               "ofType": null
             },
             "isDeprecated": false,

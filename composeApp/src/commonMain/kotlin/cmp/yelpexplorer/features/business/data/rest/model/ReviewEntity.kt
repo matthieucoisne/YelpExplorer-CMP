@@ -12,7 +12,7 @@ data class ReviewListResponse(
 data class ReviewEntity(
     val user: UserEntity,
     val text: String,
-    val rating: Int,
+    val rating: Double,
     @SerialName("time_created")
     val timeCreated: String,
 )

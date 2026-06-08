@@ -58,7 +58,7 @@ private val fakeGraphQLBusinessDetailsFragment = BusinessDetails(
                 image_url = "http://example.com/user1.jpg",
             ),
             text = "Great place!\n\nHighly recommended.",
-            rating = 5,
+            rating = 5.0,
             time_created = "2023-10-27 10:00:00",
         )
     )
@@ -113,7 +113,7 @@ val fakeDomainReview = Review(
         imageUrl = "http://example.com/user1.jpg",
     ),
     text = "Great place!\nHighly recommended.",
-    rating = 5,
+    rating = 5.0,
     timeCreated = "October 27, 2023",
 )
 
@@ -130,7 +130,7 @@ val fakeRestReview = ReviewEntity(
         imageUrl = "http://example.com/user1.jpg"
     ),
     text = "Great place!\n\nHighly recommended.",
-    rating = 5,
+    rating = 5.0,
     timeCreated = "2023-10-27 10:00:00",
 )
 
